@@ -1,0 +1,48 @@
+
+
+// layout
+section {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-areas:
+    "num num num op ac"
+    "num num num op eq"
+    "num num num op eq"
+    "num num num op eq";
+  // grid items
+  #clear      { grid-area: ac; }
+  #equals     { grid-area: eq; }
+  .digits     { grid-area: num; }
+  .operators  { grid-area: op; }
+}
+section .digits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-areas:
+    "n7 n8 n9"
+    "n4 n5 n6"
+    "n1 n2 n3"
+    "n0 n0 nd";
+  // grid items
+  #zero   { grid-area: n0; }
+  #one    { grid-area: n1; }
+  #two    { grid-area: n2; }
+  #three  { grid-area: n3; }
+  #four   { grid-area: n4; }
+  #five   { grid-area: n5; }
+  #six    { grid-area: n6; }
+  #seven  { grid-area: n7; }
+  #eight  { grid-area: n8; }
+  #nine   { grid-area: n9; }
+}
+section .operators {
+  display: grid;
+  grid-template: 1fr repeat(4, 1fr);
+}
+
+// dimension
+section {
+  height: calc(70px * 4);
+}

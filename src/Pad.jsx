@@ -5,7 +5,7 @@ export default function Pad() {
 
   return (
     <>
-    <div>
+    <section>
       <button id='clear'  >AC</button>
       <button id='equals' >&#61;</button>
       <div className='digits'>
@@ -27,7 +27,7 @@ export default function Pad() {
         <button id='multiply'   >X</button>
         <button id='divide'     >&#47;</button>
       </div>
-    </div>
+    </section>
     { window.console.count('<Pad/>') }
     </>
   )

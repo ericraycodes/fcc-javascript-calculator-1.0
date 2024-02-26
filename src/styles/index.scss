@@ -1,0 +1,42 @@
+
+
+// partials
+@import 'display';
+@import 'pad';
+@import 'app';
+@import 'label';
+@import 'sticker';
+
+
+
+
+// initial
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+// dimension
+body {
+    width: 100vw;
+    height: 100vh;
+}
+#root {
+    min-width: 240px;
+    min-height: 320px;
+    width: calc(70px * 5);
+}
+
+// layout
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+// temporary
+#root {
+    border: 1px solid orange;
+}
