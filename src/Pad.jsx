@@ -1,11 +1,44 @@
 
 
+import { useRef } from "react";
+import { useEffect } from "react"
 
-export default function Pad() {
+
+
+export default function Pad({ showInput, showCalculation }) {
+
+  // Reference to the section.
+  const sectionRef = useRef(null);
+  // Store series of input.
+  const inputRef = useRef('');
+
+
+  // Attach a delegated event listener to the component.
+  useEffect(() => {
+    sectionRef.current.addEventListener('mouseup', onMouseUp);
+    return () => sectionRef.current.removeEventListener('mouseup', onMouseUp);
+  }, []);
+
+
+  // Event callback
+  const onMouseUp = (event) => {
+    window.console.log(event, event.target.id);
+    inputRef.current += event.target.innerText;
+    showInput(inputRef.current);
+    // #clear target
+    if (event.target.id === 'clear') {
+      showCalculation('clear');
+    }
+    // digits target
+    else if (event.target.id === 'equals') {
+      showCalculation('equals');
+    }
+  };
+
 
   return (
     <>
-    <section>
+    <section ref={sectionRef}>
       <button id='clear'  >AC</button>
       <button id='equals' >&#61;</button>
       <div className='digits'>

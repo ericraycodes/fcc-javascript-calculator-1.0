@@ -46,3 +46,8 @@ section .operators {
 section {
   height: calc(70px * 4);
 }
+
+// box
+section button {
+  border: 1px solid black;
+}

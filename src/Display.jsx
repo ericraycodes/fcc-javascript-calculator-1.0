@@ -2,15 +2,15 @@
 
 
 
-export default function display() {
+export default function display({ input, calculation }) {
 
 
 
     return (
         <>
             <figure id='display'>
-                <p>Temporary display of input.</p>
-                <p>Temporary display of output.</p>
+                <p>{ input }</p>
+                <p>{ calculation }</p>
             </figure>
         </>
     );
