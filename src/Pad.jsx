@@ -3,18 +3,18 @@
 import { useRef } from "react";
 import { useEffect } from "react"
 import calc from "./calc";
-import calculator from "./calculator";
 
 
 
-export default function Pad({ showIO, showOverView }) {
+
+export default function Pad({ showIO, showExpression }) {
 
   // Reference to the section.
   const padRef = useRef(null);
-  // Store input
-  const inputRef = useRef('');
-  // Store valid digits input
-  const numRef = useRef('');
+  // Store the whole arithmetic mathematical expression
+  const expRef = useRef([]);
+  // Store valid numerical input
+  const inputRef = useRef({ input: '', isNumber: false });
 
 
   // Attach a delegated event listener to the component.
@@ -26,21 +26,37 @@ export default function Pad({ showIO, showOverView }) {
 
   // Callback: onMouseUp
   const onMouseUp = (event) => {
-    window.console.log(event);
+    window.console.log(event.target);
 
     // capture the mouse-event input
     const input = event.target.innerText;
 
-    // run according to input
+    // #clear input
     if (input === 'AC') {
       showIO(0);
-      numRef.current = '';
+      showExpression('');
+      inputRef.current.input = '';
+      inputRef.current.isNumber = false;
       window.console.clear();
       window.console.log('>> AC: clear');
-    } else {
-      const validInput = calc.validate(input, numRef)
-      showIO(validInput);
     } 
+    // #equals input
+    else if (/\=/.test(input)) {
+      window.console.log('\t#equals');
+      const expression = expRef.current.join(' ');
+      window.console.log('\texpRef:', expRef, expression);
+      showExpression(expression);
+    }
+    // numeric input
+    else if (/[0-9.]/.test(input) || (input==='-' && inputRef.current.input==='')) {
+      inputRef.current.isNumber = true;
+      const validInput = calc.validateNumericInput(input, inputRef.current);
+      showIO(validInput);
+    }
+    // operator input
+    else if (/[+-X/]/.test(input) && inputRef.current.input!=='') {
+      window.console.log('\toperator');
+    }
   };
 
 

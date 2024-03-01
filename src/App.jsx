@@ -13,7 +13,7 @@ import Sticker from "./Sticker";
 function App() {
 
   // Store the input and output data.
-  const [overView, setOverView] = useState('');
+  const [expression, setExpression] = useState('');
   const [liveIO, setLiveIO] = useState(0);
 
 
@@ -22,8 +22,9 @@ function App() {
     setLiveIO(data);
   };
   // Function: setting 'input' state.
-  const showOverView = (data) => {
-    setOverView(data);
+  const showExpression = (data) => {
+    setExpression(data);
+    window.console.log('state | expression:', data);
   }
 
 
@@ -32,12 +33,12 @@ function App() {
     <main>
       <Label />
       <Display 
-        row1={overView}
+        row1={expression}
         row2={liveIO}
       />
       <Pad 
         showIO={showIO}
-        showOverView={showOverView}
+        showExpression={showExpression}
       />
       <Sticker />
     </main>
