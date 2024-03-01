@@ -2,16 +2,16 @@
 
 
 
-export default function display({ input, calculation }) {
+export default function display({ row1, row2 }) {
 
 
 
     return (
         <>
-            <figure id='display'>
-                <p>{ input }</p>
-                <p>{ calculation }</p>
-            </figure>
+            <section id='display'>
+                <figure>{ row1 }</figure>
+                <figure>{ row2 }</figure>
+            </section>
         </>
     );
 }

@@ -3,7 +3,17 @@
 aside {
   // color
   color: silver;
+  opacity: 0.7;
 
   // typo
   font-size: 0.7rem;
+
+  // box
+  margin-top: 10px;
+
+  // layout
+  display: flex;
+  flex-flow: row wrap;
+  gap: 3px;
+  justify-content: center;
 }

@@ -1,7 +1,11 @@
 
 
+// imports
+@import 'variables';
+
+
 // layout
-section {
+.pad {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(4, 1fr);
@@ -16,7 +20,7 @@ section {
   .digits     { grid-area: num; }
   .operators  { grid-area: op; }
 }
-section .digits {
+.pad .digits {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(4, 1fr);
@@ -37,17 +41,17 @@ section .digits {
   #eight  { grid-area: n8; }
   #nine   { grid-area: n9; }
 }
-section .operators {
+.pad .operators {
   display: grid;
   grid-template: 1fr repeat(4, 1fr);
 }
 
 // dimension
-section {
-  height: calc(70px * 4);
+.pad {
+  height: calc($btn-height * 4);
 }
 
 // box
-section button {
+.pad button {
   border: 1px solid black;
 }

@@ -13,19 +13,17 @@ import Sticker from "./Sticker";
 function App() {
 
   // Store the input and output data.
-  const [input, setInput] = useState('temporary input');
-  const [calculation, setCalculation] = useState('temporary output');
+  const [overView, setOverView] = useState('');
+  const [liveIO, setLiveIO] = useState(0);
 
 
   // Function: setting 'calculation' state.
-  const showCalculation = (data) => {
-    setCalculation(data);
-    window.console.log('\tstoring calculation...');
+  const showIO = (data) => {
+    setLiveIO(data);
   };
   // Function: setting 'input' state.
-  const showInput = (data) => {
-    setInput(data);
-    window.console.log('>> USER:', data);
+  const showOverView = (data) => {
+    setOverView(data);
   }
 
 
@@ -34,16 +32,16 @@ function App() {
     <main>
       <Label />
       <Display 
-        input={input}
-        calculation={calculation}
+        row1={overView}
+        row2={liveIO}
       />
       <Pad 
-        showInput={showInput}
-        showCalculation={showCalculation}
+        showIO={showIO}
+        showOverView={showOverView}
       />
       <Sticker />
     </main>
-    { window.console.count('<App/>') }
+    {/* { window.console.count('<App/>') } */}
     </>
   )
 }
