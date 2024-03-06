@@ -1,45 +1,70 @@
 
 
-import { useState } from "react";
-
-
+import { useState, useRef } from "react";
 import Display from "./Display";
 import Label from "./Label";
 import Pad from "./Pad";
 import Sticker from "./Sticker";
-
+import calc from "./calc";
 
 
 function App() {
 
-  // Store the input and output data.
-  const [expression, setExpression] = useState('');
-  const [liveIO, setLiveIO] = useState(0);
+  // Display state
+  const [display, setDisplay] = useState({
+    "row1" : '',
+    "row2" : ''
+  });
+  // Store calculator's input data. This will not change between renders.
+  const calculatorData = useRef({
+    "key" : {
+      "char" : '',
+      "type" : null
+    },
+
+    "role" : {
+      "str"       : '',
+      "type"      : null,
+      "isValid"   : false,
+      "doCollect" : false
+    },
+
+    "expression" : {
+      "str" : '',
+      "arr" : [],
+    },
+
+    "result" : {
+      "operatorIndex" : null,
+      "answer"        : null,
+      "isSimplified"  : false
+    },
+
+    "doClear" : false
+  });
 
 
-  // Function: setting 'calculation' state.
-  const showIO = (data) => {
-    setLiveIO(data);
+  // Function: collecting the mouse input.
+  const collectMouseInput = (data) => {
+    calcData.current.key.char = data;
+
+    // Run calculator
+    calc.run(calculatorData);
+
+    setDisplay({
+      "row1" : '',
+      "row2" : ''
+    });
   };
-  // Function: setting 'input' state.
-  const showExpression = (data) => {
-    setExpression(data);
-    window.console.log('state | expression:', data);
-  }
+
 
 
   return (
     <>
     <main>
       <Label />
-      <Display 
-        row1={expression}
-        row2={liveIO}
-      />
-      <Pad 
-        showIO={showIO}
-        showExpression={showExpression}
-      />
+      <Display display={display} />
+      <Pad callback={collectMouseInput} />
       <Sticker />
     </main>
     {/* { window.console.count('<App/>') } */}

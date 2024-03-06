@@ -1,20 +1,13 @@
 
 
-import { useRef } from "react";
-import { useEffect } from "react"
+import { useRef, useEffect } from "react";
 import calc from "./calc";
 
 
+export default function Pad({ callback }) {
 
-
-export default function Pad({ showIO, showExpression }) {
-
-  // Reference to the section.
+  // Reference to the DOM <section /> element.
   const padRef = useRef(null);
-  // Store the whole arithmetic mathematical expression
-  const expRef = useRef([]);
-  // Store valid numerical input
-  const inputRef = useRef({ input: '', isNumber: false });
 
 
   // Attach a delegated event listener to the component.
@@ -28,35 +21,11 @@ export default function Pad({ showIO, showExpression }) {
   const onMouseUp = (event) => {
     window.console.log(event.target);
 
-    // capture the mouse-event input
-    const input = event.target.innerText;
+    // capture the single-character-mouse-event-input
+    const mouseInput = event.target.innerText;
 
-    // #clear input
-    if (input === 'AC') {
-      showIO(0);
-      showExpression('');
-      inputRef.current.input = '';
-      inputRef.current.isNumber = false;
-      window.console.clear();
-      window.console.log('>> AC: clear');
-    } 
-    // #equals input
-    else if (/\=/.test(input)) {
-      window.console.log('\t#equals');
-      const expression = expRef.current.join(' ');
-      window.console.log('\texpRef:', expRef, expression);
-      showExpression(expression);
-    }
-    // numeric input
-    else if (/[0-9.]/.test(input) || (input==='-' && inputRef.current.input==='')) {
-      inputRef.current.isNumber = true;
-      const validInput = calc.validateNumericInput(input, inputRef.current);
-      showIO(validInput);
-    }
-    // operator input
-    else if (/[+-X/]/.test(input) && inputRef.current.input!=='') {
-      window.console.log('\toperator');
-    }
+    // pass the input for analysis
+    callback(mouseInput);
   };
 
 
