@@ -5,7 +5,7 @@ import Display from "./Display";
 import Label from "./Label";
 import Pad from "./Pad";
 import Sticker from "./Sticker";
-import calc from "./calc";
+import runCalculator from "./calc";
 
 
 function App() {
@@ -17,16 +17,16 @@ function App() {
   });
   // Store calculator's input data. This will not change between renders.
   const calculatorData = useRef({
-    "key" : {
-      "char" : '',
-      "type" : null
+    "input" : {
+      "value" : '',
+      "type"  : null,
     },
 
-    "role" : {
+    "element" : {
       "str"       : '',
       "type"      : null,
       "isValid"   : false,
-      "doCollect" : false
+      "doCollect" : false,
     },
 
     "expression" : {
@@ -37,23 +37,23 @@ function App() {
     "result" : {
       "operatorIndex" : null,
       "answer"        : null,
-      "isSimplified"  : false
+      "isSimplified"  : false,
     },
 
-    "doClear" : false
+    "doClear" : false,
   });
 
 
   // Function: collecting the mouse input.
   const collectMouseInput = (data) => {
-    calcData.current.key.char = data;
 
     // Run calculator
-    calc.run(calculatorData);
+    runCalculator(calculatorData, data);
 
+    // Update display
     setDisplay({
-      "row1" : '',
-      "row2" : ''
+      "row1" : calculatorData.current.expression.str,
+      "row2" : calculatorData.current.element.str
     });
   };
 

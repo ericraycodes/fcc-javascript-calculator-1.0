@@ -19,12 +19,12 @@
 1. The **`<Display/>`** child component for display functionality.
 
 #### The flow of functionality
-1. **Captures** the mouse *event* - collecting the input.
+1. **Captures** the mouse *event* - collecting the input value.
 1. Defines the **type** of the single character input: *clear, equals, operand, operator*.
 1. Run **functionalities** dependent on mouse input: 
-	- Validate the user-inputted expression.
-		- Define **rules** for proper mathematical expressions: *sequence* of operands and operators.
-		- Define **rules** for classifying inputs to either an *operand* or *operator*.
+	- Form an expression.
+		1. Validate the sequence of inputs to classify them as an *operand* or an *operator* element.
+		1. Collect a validated *sequence* of elements to form a math expression.
 	- Calculate result of the expression.
 		- **Identify** operators in the collection.
 		- **Simplify** the collection with MDAS until one numeric result remains.
@@ -34,8 +34,8 @@
 #### Data structure
 1. The app data is housed within one **object** stored in a *ref* hook to store working data.
 1. Top level data:
-	- **"key"**, stores mouse input with properties:
-		- **'char'**, a single character string.
+	- **"input"**, stores mouse input with properties:
+		- **'value'**, a single character string.
 		- **'type'**, the type of input: *operand, operator, clear, equals*.
 	- **"role"**, store the collected valid single/group of 'key' with properties:
 		- **'str'**, a string of 'key.char' inputs with similar 'key.type'.
