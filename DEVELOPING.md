@@ -1,6 +1,6 @@
 
 # Coding essentials
-- App **functionality-flow** and **data management** must be mapped out completely before starting developing.
+- App **functionality-flow** and **data management** must be mapped out completely before starting developing. Details must be specific and comprehensive.
 - For **scalability**, pieces of functionality should be *pure, attachable*, and *detachable*.
 - It is best practice to store/manage/access **app data** at one place (**global access** when possible) - this help mitigate complexity, overhead, maintenance, etc.
 	- **Data structure** must be meaningful.
@@ -22,9 +22,14 @@
 1. **Captures** the mouse *event* - collecting the input value.
 1. Defines the **type** of the single character input: *clear, equals, operand, operator*.
 1. Run **functionalities** dependent on mouse input: 
-	- Form an expression.
-		1. Validate the sequence of inputs to classify them as an *operand* or an *operator* element.
-		1. Collect a validated *sequence* of elements to form a math expression.
+	- Form a validated expression.
+		1. Validate the *operand* input. The *operator* input does not need validation.
+		1. Store individual input into an *array*
+		1. Validate the sequence of the expression.
+			- Expressions start and end with an *operand*.
+			- There is a single *operator* in between *operands*.
+			- The subtraction operator can be used to indicate a *negative operand*.
+		1. Reflect calculator activity onto the *display*.
 	- Calculate result of the expression.
 		- **Identify** operators in the collection.
 		- **Simplify** the collection with MDAS until one numeric result remains.

@@ -1,4 +1,12 @@
 
+
+// Collect mouse-input
+const collectInput = (data, input) => {
+  // output
+  data.current.input.value = input;
+};
+
+
 // Define the mouse-event input key.
 const defineInputType = (value) => {
   let type = null;
@@ -19,97 +27,168 @@ const setInputType = (data) => {
 // Define the type of a string.
 const defineElementType = (str) => {
   let type = null;
-  if (/[0-9.-]+/.test(str))     type = 'operand';
+  if (/[0-9.]+/.test(str))     type = 'operand';
   else if (/[/X+-]/.test(str))  type = 'operator';
   return type;
 };
-
-// Form an expression.
-const formExpression = (data) => {
-  // reference
-  const expression = data.current.expression;
-
-  // output: join valid expression as string
-  expression.str = expression.arr.join(' ');
-
-  window.console.log('\texpression:', expression);
-};
-// Calculate the answer of the expression.
-const calculateExpression = (data) => {
-  window.console.log('\tresult pending...');
-};
-// Clear the calculator data.
-const resetCalculatorData = (data) => {
+const setElementType = (data) => {
+  const element = data.current.element;
+  const type = elem.defineType(element.str);
   // output
-  data.current = {
-    "input" : { "value" : '', "type" : null, },
-    "element" : { "str" : '', "type" : null, "isValid" : false, "doCollect" : false, },
-    "expression" : { "str" : '', "arr" : [], },
-    "result" : { "operatorIndex" : null, "answer" : null, "isSimplified" : false, },
-    "doClear" : false,
-  };
-  window.console.clear();
+  element.type = type;
 };
+
+
 // Collect validated inputs. Classify as 'operand' or 'operator'.
-const validateOperand = (data) => {
+const validateElements = (data) => {
   /**
-     * OPERAND SYNTAX RULES
-     * 1. Can integrate the subtraction operator ( - ) to enter a negative integer and decimal.
-     * 2. Cannot start with multiple zeroes.
-     * 3. The starting zero will be replaced by the next whole number before any decimal digits.
-     * 4. Can start with only one zero for decimal figures.
-     * 5. Can end with one or more decimal zeroes.
+     * OPERAND SYNTAX INPUT RULES
+     * 1. Can start with only one zero to anticipate decimals and when followed by decimals, e.g., '0.1'.
+     * 2. The starting zero will be replaced by the next whole number input, e.g., '0 1' will be '1'.
+     * 3. Can end with one or more decimal zeroes in the anticipation of a non-zero decimal figure input.
      */
 
   // reference
   const element = data.current.element;
   const input = data.current.input;
 
-  // collect the user input
-  const userInput = element.str + input.value;
+  // OPERATORS: single character syntax, no validation needed.
+  if (input.type !== element.type) {
+    data.current.element = {
+      "str"   : '',
+      "type"  : input.type,
+    };
+  }
 
-  // validate for correct numeric syntax
-  const rgx1 = /^0?[1-9]+[0-9]*(.[0-9]*)?$/;
-  const rgx2 = /^0?.([0-9]*)?$/;
-  const test1 = rgx1.test(userInput);
-  const test2 = rgx2.test(userInput);
-  if (test1 || test2) element.str = userInput;
+  // OPERANDS: syntax validation
+  if (input.type === 'operand') {
+    // collect the user input
+    const userInput = element.str + input.value;
 
-  // test the user input if a Number.
-  // const test = Boolean(parseFloat(userInput)) || input.value==='0';
-  window.console.log('\toperand test:', test1, test2, userInput);
-  // if (test) {
-  //   element.str = userInput;
-  // }
+    // validate for correct numeric syntax
+    const test1 = /^[0-9]*\.?[0-9]*$/.test(userInput);
+    // check for the presence of decimals
+    const test2 = /^([0-9]*)?\./.test(userInput);
 
+    // test is ok
+    if (test1) {
+      // collect valid input
+      element.str = userInput;
 
-  // OUTPUT: validated operand in element.
-
+      // convert to number when no decimal figure
+      if (!test2) {
+        element.str = parseFloat(element.str);
+        // convert back to string
+        element.str = `${element.str}`;
+      }
+    }
+    // add zero before a decimal point
+    if (element.str==='.') element.str = '0.';
+  }
+  // OPERATORS: no validation.
+  else if (input.type === 'operator') {
+    data.current.element = {
+      "str"   : input.value,
+      "type"  : input.type,
+    };
+  }
+  window.console.log('\telements:', element, input.type);
 };
-const validateOperator = (data) => {
+// Collect elements to the expression array.
+const collectElements = (data) => {
+  const expression = data.current.expression;
+  const element = data.current.element;
+  // output
+  expression.arr = expression.arr.concat({
+    "str"   : element.str,
+    "type"  : element.type,
+  });
+  window.console.log('\telements:', expression.arr.map(obj => obj.str));
+};
+// Collate the element.
+const collateElements = (data) => {
+  // reference
+  const input = data.current.input;
+  const element = data.current.element;
+  const expression = data.current.expression;
+
+  // access expression array
+  const arrLastIndex = expression.arr.length - 1;
+
+  if (arrLastIndex)
+  // operators: redundant 'operator' types
+
+  window.console.log('\tcollate arr:', arrLastIndex, expression.arr);
+};
+
+
+// Form an expression.
+const formExpression = (data) => {
   /**
-     * OPERATOR INPUT RULES
-     * 1. There is only one 'operator' in between 'operands'.
-     * 2. Among a series of 'operator' inputs, only the last input is valid (or second to the minus operator).
-     * 3. Special case: subtraction operator (-) can be used to input a 'negative number'.
-     */
+   * EXPRESSION SEQUENCE RULES
+   * 1. Starts and ends with an 'operand'.
+   * 2. There is only one 'operator' in between 'operands'.
+   * 3. Among a series of 'operator', only the latest operator-element is valid (or second latest to the minus operator).
+   * 4. Special case: the subtraction operator (-) can be used to integrate to an 'operand' to form a 'negative number'.
+   */
+
+  // reference
+  const expression = data.current.expression;
+
+
+
+  window.console.log('\texpression:', expression.arr);
+};
+
+
+// Calculate the answer of the expression.
+const calculateExpression = (data) => {
+  window.console.log('\tresult pending...');
+};
+
+
+// Clear the calculator data.
+const setCalculatorClear = (data) => {
+  data.current.doClear = true;
+};
+const resetCalculatorData = (data) => {
+  // output
+  if (data.current.doClear) {
+    data.current = {
+      "input" : { "value" : '', "type" : null, },
+      "element" : { "str" : '', "type" : null, },
+      "expression" : { "str" : '', "arr" : [], },
+      "result" : { "operatorIndex" : null, "answer" : null, "isSimplified" : false, },
+      "doClear" : false,
+    };
+    window.console.clear();
+  }
 };
 
 
 
 
+// OBJECTS
 const calc = {
-  "defInputType"  : defineInputType,
-  "setInputType"  : setInputType,
-  "defElementType": defineElementType,
+  "input"           : collectInput,
+  "defInputType"    : defineInputType,
+  "setInputType"    : setInputType,
 
-  "formulate"     : formExpression,
-  "calculate"     : calculateExpression,
-  "reset"         : resetCalculatorData,
+  "calculate"       : calculateExpression,
 
-  "operand"       : validateOperand,
+  "setClear"        : setCalculatorClear,
+  "reset"           : resetCalculatorData,
+};
+const elem = {
+  "defineType"      : defineElementType,
+  "setType"         : setElementType,
 
-  // "expression"    : validate,
+  "validate"        : validateElements,
+  "collect"         : collectElements,
+  "collate"         : collateElements,
+};
+const expression = {
+  "formulate"       : formExpression,
 };
 
 
@@ -134,19 +213,22 @@ export default function runCalculator(calculatorData, mouseInput) {
   const element = data.current.element;
 
   // COLLECT AND DEFINE TYPE OF MOUSE-INPUT
-  input.value = mouseInput;
+  calc.input(data, mouseInput);
   calc.setInputType(data);
 
   // RUN MAIN FUNCTIONALITIES
   // form an expression
   if (input.type==='operand' || input.type==='operator') {
-    // validate 'operand' elements, 'operator' no validation needed
-    if (input.type==='operand') calc.operand(data);
+
+    // form elements
+    elem.validate(data);
+
+    // collect elements
+    elem.collect(data);
+    // collate elements
+    // elem.collate(data);
 
 
-    // collect valid elements
-    // calc.element(data);
-    window.console.log('\telement:', element);
   }
   // calculate the expression
   else if (input.type === 'equals') {
@@ -154,8 +236,10 @@ export default function runCalculator(calculatorData, mouseInput) {
   }
   // clear/reset calculator data
   else if (input.type === 'clear') {
+    calc.setClear(data);
     calc.reset(data);
   }
 
+  // data store
   window.console.log(data.current);
 }

@@ -25,8 +25,6 @@ function App() {
     "element" : {
       "str"       : '',
       "type"      : null,
-      "isValid"   : false,
-      "doCollect" : false,
     },
 
     "expression" : {
