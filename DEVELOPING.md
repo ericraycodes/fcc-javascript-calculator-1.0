@@ -79,6 +79,9 @@
 1. Inputting an *operator* after the '=' will start a new expression starting from the *previous result*.
 
 
+# Pure Functional Programming
+- Array methods: [reference](https://stackoverflow.com/questions/65592288/which-functions-in-array-prototype-are-pure-function-in-javascript)
+
 # useRef and useState for Performance
 - useRef vs useState: [reference](https://medium.com/web-development-with-sumit/useref-vs-usestate-in-react-330539025245#:~:text=serve%20different%20purposes.-,useRef%20is%20primarily%20used%20to%20access%20and%20manipulate%20the%20DOM,renders%20when%20the%20state%20updates.)
 - efficient use of useState and useRef: [reference](https://medium.com/@rishavjaiss14/common-mistakes-react-developers-make-usestate-or-useref-76bca3903a80)

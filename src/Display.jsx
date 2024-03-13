@@ -4,16 +4,18 @@
 
 export default function Display({ display }) {
 
-    // window.console.log('<< Display:', display);
+    window.console.log('Display:', display);
+    const row1 = display.row1;
+    const row2 = display.row2;
 
     return (
         <>
             <section className='display'>
                 <figure>
-                    { display.row1 }
+                    { row1 }
                 </figure>
                 <figure id='display'>
-                    { display.row2 !== '' ? display.row2 : 0 } 
+                    { row2 !== '' ? row2 : 0 } 
                 </figure>
             </section>
         </>
