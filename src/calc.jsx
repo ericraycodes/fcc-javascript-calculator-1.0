@@ -1,337 +1,232 @@
 
 
-// Collect mouse-input
-const collectInput = (data, input) => {
-  // output
-  data.current.input.value = input;
-};
-
-
-// Define the mouse-event input key.
-const defineInputType = (value) => {
-  let type = null;
-  if (/[0-9.]/.test(value))      type = 'operand';
-  else if (/[X/+-]/.test(value)) type = 'operator';
-  else if (value === '=')        type = 'equals';
-  else if (value === 'AC')       type = 'clear';
-  // return statement
-  return type;
-};
-const setInputType = (data) => {
+// Collect input as object with type: 'operand' or 'operator'.
+const collectUserInput = (data, userInput) => {
+  // reference
   const input = data.current.input;
-  const type = calc.defInputType(input.value);
-  // output
+  // identify input type
+  let type = null;
+  if (/[0-9.]/.test(userInput)) type = 'operand';
+  else if (/[x/+-]/.test(userInput)) type = 'operator';
+  else if (userInput === '=') type = 'equals';
+  else if (userInput === 'AC') type = 'clear';
+  // output: This is much faster than assign through on object literal.
+  input.value = userInput;
   input.type = type;
-  window.console.log('\tinput:', input);
-};
-// Define the type of a string.
-const defineElementType = (str) => {
-  let type = null;
-  if (/[0-9.]+/.test(str))     type = 'operand';
-  else if (/[/X+-]/.test(str))  type = 'operator';
-  return type;
-};
-const setElementType = (data) => {
-  const element = data.current.element;
-  const type = elem.defineType(element.str);
-  // output
-  element.type = type;
+  // console
+  window.console.log('input:', input);
 };
 
 
-// Collect validated inputs. Classify as 'operand' or 'operator'.
-const validateElements = (data) => {
+
+
+// Form components by validating series of inputs.
+const formAComponent = (DATA) => {
   /**
-     * OPERAND SYNTAX INPUT RULES
-     * 1. Can start with only one zero to anticipate decimals and when followed by decimals, e.g., '0.1'.
-     * 2. The starting zero will be replaced by the next whole number input, e.g., '0 1' will be '1'.
-     * 3. Can end with one or more decimal zeroes in the anticipation of a non-zero decimal figure input.
-     */
+  * 1. Component values are strings.
+  * 2. Operands can be a multi-character string.
+  * 3. Operators are single-character string.
+  */
 
   // reference
-  const element = data.current.element;
-  const input = data.current.input;
+  const INPUT = DATA.current.input;
+  const COMPONENT = DATA.current.component;
 
-  // Separate 'operator' and 'operand' in a single element string.
-  // element.str = element.type === input.type ? element.str : '';
-  if (element.type !== input.type) element.str = '';
+  // variable
+  let component = null;
 
-  // OPERATORS: single character syntax, no validation needed.
-  if (input.type === 'operator') {
-    element.str = input.value;
-    element.type = input.type;
+  // separate component types
+  if (INPUT.type !== COMPONENT.type) {
+    COMPONENT.value = '';
+    COMPONENT.type = INPUT.type;
   }
-  // OPERANDS: syntax validation
-  else if (input.type === 'operand') {
-    // set element type.
-    element.type = input.type;
 
-    // collect the user input
-    const userInput = element.str + input.value;
+  // when 'operand'
+  if (INPUT.type === 'operand') {
+    /**
+    * Operand rules:
+    * 1. A decimal point '.' will be '0.'.
+    * 2. Can start a single zero as first input, or when followed by decimal figures.
+    * 3. The zero will be removed when followed by whole numbers.
+    */
 
-    // validate for correct numeric syntax
-    const test1 = /^\-?[0-9]*\.?[0-9]*$/.test(userInput);
-    // check for the presence of decimals
-    const test2 = /^\-?([0-9]*)?\./.test(userInput);
+    // variable
+    const inputSeries = COMPONENT.value + INPUT.value;
 
-    // test is ok
-    if (test1) {
-      // collect valid input
-      element.str = userInput;
+    // test: Is the first input a decimal point?
+    const isDecimalPoint = inputSeries === '.';
+    // test: Is the series of numeric input valid? The parseFloat() will take care of zeroes.
+    const isNumeric = /^\-?[0-9]+?\.?[0-9]*$/.test(inputSeries);
+    // test: Is there a presence of a decimal point?
+    const isThereADecimalPoint = /\./.test(inputSeries);
+    // tests in console
+    // window.console.log('\ttests:\t', 'dp.', isDecimalPoint, 'n.', isNumeric, 'df.', isThereADecimalPoint);
 
-      // convert to number when no decimal figure
-      if (!test2) {
-        element.str = parseFloat(element.str);
-        // convert back to string
-        element.str = `${element.str}`;
-      }
+    // conditional operand values
+    if (isDecimalPoint) {
+      // adds a zero in front of the decimal point
+      component = '0.';
+    } else if (isNumeric) {
+      // converts to float to regularize starting zeroes
+      // strings with decimals are not converted to retain tail of zeroes after the decimal, but will still be validated later
+      component = isThereADecimalPoint ? inputSeries : parseFloat(inputSeries);
+      // window.console.log('\tnumeric:', parseFloat(inputSeries));
+    } else {
+      component = COMPONENT.value;
     }
-    // add zero before a decimal point
-    if (element.str==='.') element.str = '0.';
+  }
+  // when 'operator'
+  else if (INPUT.type === 'operator') {
+    // collect the operator
+    component = INPUT.value;
   }
 
-  window.console.log('\telement:', element);
-};
-// Collect elements to the expression array.
-const storeElements = (data) => {
-  const expression = data.current.expression;
-  const element = data.current.element;
   // output
-  expression.arr = expression.arr.concat({
-    "str"   : element.str,
-    "type"  : element.type,
+  COMPONENT.value = component;
+
+  // console
+  window.console.log('component:', COMPONENT);
+};
+// Displats components on the calculator.
+const shareComponentAsDisplayData = (DATA) => {
+  // output
+  DATA.current.display.row2 = DATA.current.component.value;
+};
+// Store valid components to expression array.
+const storeComponentToExpressionArray = (DATA) => {
+  // references
+  const COMPONENT = DATA.current.component;
+  const EXPRESSION = DATA.current.expression;
+
+  // concat component to array
+  const array = EXPRESSION.arr.concat({
+    "value" : COMPONENT.value,
+    "type"  : COMPONENT.type,
   });
-  window.console.log('\tstore:\t', expression.arr.map(obj => obj.str));
-};
-// Collate the element.
-const collateElements = (data) => {
-  // reference
-  const element = data.current.element;
-  const expression = data.current.expression;
 
-  // access array
-  const array = [...expression.arr];
-  const last = array.length - 1;
-  const doesExist1 = Boolean(array[last - 1]);
-  const operatorSequence1 = Boolean(array[last - 2]) && array[last-2]["type"]==='operator';
-  // window.console.log('\tlast index - 2:', doesExist2);
-
-  // Check for two element items within the array.
-  if (doesExist1) {
-    // for two redundant elements, remove the former when the latter can't be a negative ('-') indicator.
-    const similarType2 = array[last-1]["type"] === array[last]["type"];
-    if (similarType2 && array[last]["str"]!=='-') {
-      // conditional output
-      expression.arr = array.toSpliced(last - 1, 1);
-    }
-  }
-  // Validate a sequence of three 'operator' input.
-  if (operatorSequence1 && array[last-1]["str"]==='-' && array[last]["type"]==='operator') {
-    // conditional output
-    expression.arr = array.toSpliced(last - 2, 2);
-  }
-
-  window.console.log('\tcollated:', expression.arr.map(obj => obj.str));
-};
-
-
-// Correct the expression seqence.
-const validateSequence = (data) => {
-  /**
-   * EXPRESSION SEQUENCE RULES
-   * 1. Starts and ends with an 'operand'.
-   * 2. There is only one 'operator' in between 'operands'.
-   * 3. Special case: the subtraction operator (-) can be used to integrate to an 'operand' to form a 'negative number'.
-   */
-
-  // reference
-  const expression = data.current.expression;
-
-  // access array
-  const array = [...expression.arr];
-  const n = array.length - 1;
-
-  // conditions
-  const isOperator0 = array[0]["type"]==='operator' && array[0]["str"]!=='-';
-  const does1Exist = Boolean(array[1]);
-
-  // Conditional Output: remove 'operators' in front of the sequence, except a single 'negative' indicator.
-  if (array[0]["type"]==='operator') {
-    if (isOperator0) expression.arr = array.toSpliced(0, 1);
-    if (does1Exist && array[0]["str"]==='-') {
-      if (array[1]["str"]==='-') {
-        expression.arr = array.toSpliced(1, 1);
-      }
-    }
-  }
-
-  // Conditional Output: parseFloat 'operand' before the latest inputted 'operator'
-  const isPrevOperandExist = Boolean(array[n-1]);
-  if (isPrevOperandExist) {
-    if (array[n-1]["type"]==='operand' && array[n]["type"]==='operator') {
-      expression["arr"][n-1]["str"] = `${parseFloat(array[n-1]["str"])}`;
-    }
-  }
-
-  window.console.log('\tsequence:', expression.arr.map(obj => obj.str));
-};
-// Integrate the negative indicator to 'operands'.
-const integrateNegativeIndicator = (data) => {
-  // reference
-  const expression = data.current.expression;
-  const element = data.current.element;
-
-  // access array
-  const array = [...expression.arr];
-  const n = array.length - 1;
-
-  // condition 1: the first operand
-  if (n === 1) {
-    if (array[0]["str"]==='-' && array[1]["type"]==='operand') {
-      element.str = array[0]["str"] + array[1]["str"];
-      const negativeOperand = {
-        "str"   : element.str,
-        "type"  : 'operand',
-      };
-      // output
-      expression.arr = [negativeOperand];
-    }
-  }
-  // condition 2: following operands
-  else if (n >= 3) {
-    if (array[n-2]["type"]==='operator' && array[n-1]["str"]==='-' && array[n]["type"]==='operand') {
-      element.str = array[n-1]["str"] + array[n]["str"];
-      const negativeOperand = {
-        "str"   : element.str,
-        "type"  : 'operand',
-      };
-      // output
-      expression.arr = [...array.toSpliced(n-1, 2, negativeOperand)];
-    }
-  }
-
-  window.console.log('\tnegative:', expression.arr.map(obj => obj.str));
-};
-// Strings up the expression.
-const stringUpExpression = (data) => {
-  // reference
-  const expression = data.current.expression;
-  const string = expression.arr.map(obj => obj.str).join(' ');
-  expression.str = string;
-
-  window.console.log('\tstring:', string);
-};
-
-
-// Calculate the answer of the expression.
-const calculateExpression = (data) => {
-  window.console.log('\tresult pending...');
-};
-
-
-// Clear the calculator data.
-const setCalculatorClear = (data) => {
-  data.current.doClear = true;
-};
-const resetCalculatorData = (data) => {
   // output
-  if (data.current.doClear) {
-    data.current = {
-      "input" : { "value" : '', "type" : null, },
-      "element" : { "str" : '', "type" : null, },
-      "expression" : { "str" : '', "arr" : [], },
-      "result" : { "operatorIndex" : null, "answer" : null, "isSimplified" : false, },
-      "doClear" : false,
-    };
-    window.console.clear();
-  }
+  EXPRESSION.arr = [...array];
+
+  // console
+  window.console.log('collection:', EXPRESSION.arr.map(obj => obj.value));
 };
 
 
 
 
-// OBJECTS
-const calc = {
-  "input"           : collectInput,
-  "defInputType"    : defineInputType,
-  "setInputType"    : setInputType,
+// Validate the expression array sequence of components.
+const validateExpressionSequence= (DATA) => {
+  /**
+  * Expression syntax:
+  * 1. Starts and ends with an operand.
+  * 2. A single operator between operands.
+  * 3. Can use the minus operator as a negative operand indicator when not used as operator.
+  * 4. When a result of the previous calculation is present, it is used as a start of another expression
+  *    when user follows it up with an operator first, otherwise, it is erased.
+  */
 
-  "calculate"       : calculateExpression,
+  // reference
+  const EXPRESSION = DATA.current.expression;
 
-  "setClear"        : setCalculatorClear,
-  "reset"           : resetCalculatorData,
+
+
+  // console
+  window.console.log('sequence:', EXPRESSION.arr.map(obj => obj.value));
 };
-const elem = {
-  "defineType"      : defineElementType,
-  "setType"         : setElementType,
 
-  "validate"        : validateElements,
-  "store"           : storeElements,
-  "collate"         : collateElements,
+
+
+
+// Resets the calculator data to initial state.
+const clearCalculatorData = (data) => {
+  // output
+  data.current = {
+    "input" : {
+      "value" : '',
+      "type"  : null,
+    },
+
+    "component" : {
+      "value" : '',
+      "type"  : null,
+    },
+
+    "expression" : {
+      "str" : '',
+      "arr" : [],
+    },
+
+    "calculation" : {
+      "result"  : null,
+      "isValid" : false,
+    },
+
+    "display" : {
+      "row1" : '',
+      "row2" : 0,
+    },
+  };
+  // clear the console
+  window.console.clear();
+};
+
+
+
+/** functions in objects */
+const input = {
+  "collect"   : collectUserInput,
+};
+const comp = {
+  "form"    : formAComponent,
+  "display" : shareComponentAsDisplayData,
+  "store"   : storeComponentToExpressionArray,
 };
 const exp = {
-  "formulate"       : validateSequence,
-  "negate"          : integrateNegativeIndicator,
-  "display"         : stringUpExpression,
+  "validate"   : validateExpressionSequence,
+};
+const calc = {
+  // "calculate" : solveTheExpression,
+  "reset"     : clearCalculatorData,
 };
 
 
 
 
-/**
- * MAIN FUNCTION
- *
- * @param {*} calculatorData - the Calculator data object stored in a ref hook, the only data store.
- * @param {*} mouseInput - a string captured from a mouse-event, the only user-input.
- *
- * The general OUTPUT of every functionality is to access and/or update calculator data
- * in response to user-input.
- *
- * The MAIN OUTPUT of the app is to produce result from calculating a validated input of expression.
- */
-export default function runCalculator(calculatorData, mouseInput) {
+/** MAIN CALCULATOR FUNCTION */
+export default function runCalculator(DATA, userInput) {
+  // references
+  const INPUT = DATA.current.input;
+  // Collect the user input, define its type.
+  input.collect(DATA, userInput);
 
-  // REFERENCES
-  const data = calculatorData;
-  const input = data.current.input;
-  const element = data.current.element;
+  // Run main functionalities of the calculator.
+  // Form an expression.
+  if (INPUT.type==='operand' || INPUT.type==='operator') {
+    // form components: 'operand' or 'operator'.
+    comp.form(DATA);
 
-  // COLLECT AND DEFINE TYPE OF MOUSE-INPUT
-  calc.input(data, mouseInput);
-  calc.setInputType(data);
+    // display the components
+    comp.display(DATA);
 
-  // RUN MAIN FUNCTIONALITIES
-  // form an expression
-  if (input.type==='operand' || input.type==='operator') {
+    // store components
+    comp.store(DATA);
 
-    // form elements
-    elem.validate(data);
-
-    // store elements to array
-    elem.store(data);
-
-    // collate elements
-    elem.collate(data);
-
-    // correct the sequence
-    exp.formulate(data);
-
-    // integrate negative indicators to operands
-    exp.negate(data);
-
-    // string up the expression array for display
-    exp.display(data);
+    exp.validate(DATA);
   }
-  // calculate the expression
-  else if (input.type === 'equals') {
-    calc.calculate(data);
+  // Calculate the inputted expression.
+  else if (INPUT.type === 'equals') {
+    // final validation expression
+    // exp.finish(data);
+
+    // calculate result
+    // exp.calculate(data);
   }
-  // clear/reset calculator data
-  else if (input.type === 'clear') {
-    calc.setClear(data);
-    calc.reset(data);
+  // Reset the calculator.
+  else if (INPUT.type === 'clear') {
+    // Sets the calculator data to its initial state.
+    calc.reset(DATA);
   }
 
-  // data store
-  window.console.log(data.current);
+  // calculator data in console
+  window.console.log('DATA STORE:', DATA.current);
 }

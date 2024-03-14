@@ -50,7 +50,7 @@ export default function Pad({ callback }) {
       <div className='operators'>
         <button id='add'        >&#43;</button>
         <button id='subtract'   >&#45;</button>
-        <button id='multiply'   >X</button>
+        <button id='multiply'   >x</button>
         <button id='divide'     >&#47;</button>
       </div>
     </section>

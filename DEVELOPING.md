@@ -29,6 +29,7 @@
 			- Expressions start and end with an *operand*.
 			- There is a single *operator* in between *operands*.
 			- The subtraction operator can be used to indicate a *negative operand*.
+			- Anticipates the use of previous calculation result to start the next expression.
 		1. Reflect calculator activity onto the *display*.
 	- Calculate result of the expression.
 		- **Identify** operators in the collection.
@@ -42,11 +43,9 @@
 	- **"input"**, stores mouse input with properties:
 		- **'value'**, a single character string.
 		- **'type'**, the type of input: *operand, operator, clear, equals*.
-	- **"role"**, store the collected valid single/group of 'key' with properties:
+	- **"element"**, store the collected valid single/group of 'key' with properties:
 		- **'str'**, a string of 'key.char' inputs with similar 'key.type'.
 		- **'type'**, specify the 'key.type': *operand, operator*.
-		- **'isValid'**, boolean *true* when 'role.str' is valid, *false* otherwise.
-		- **'doCollect'**, boolean *true* to collect 'role.str' between 'role.type' classification.
 	- **"expression"**, store the validated mathematical expression input, with properties:
 		- **'str'**, a string representation of the 'expression'.
 		- **'arr'**, an array of the collection of validated sequence of 'role'(operands and operators).

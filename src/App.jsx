@@ -15,16 +15,16 @@
         "row1" : '',
         "row2" : ''
       });
-      // Store calculator's input data. This will not change between renders.
-      const calculatorData = useRef({
+      // Store calculator's data. This will not change between renders.
+      const DATA = useRef({
         "input" : {
           "value" : '',
           "type"  : null,
         },
 
-        "element" : {
-          "str"       : '',
-          "type"      : null,
+        "component" : {
+          "value" : '',
+          "type"  : null,
         },
 
         "expression" : {
@@ -32,26 +32,29 @@
           "arr" : [],
         },
 
-        "result" : {
-          "operatorIndex" : null,
-          "answer"        : null,
-          "isSimplified"  : false,
+        "calculation" : {
+          "result"  : null,
+          "isValid" : false,
         },
 
-        "doClear" : false,
+        "display" : {
+          "row1" : '',
+          "row2" : 0,
+        }
+
       });
 
 
       // Function: collecting the mouse input.
-      const collectMouseInput = (data) => {
+      const collectMouseInput = (userInput) => {
 
         // Run calculator
-        runCalculator(calculatorData, data);
+        runCalculator(DATA, userInput);
 
         // Update display
         setDisplay({
-          "row1" : calculatorData.current.expression.str,
-          "row2" : calculatorData.current.element.str,
+          "row1" : DATA.current.display.row1,
+          "row2" : DATA.current.display.row2,
         });
       };
 
