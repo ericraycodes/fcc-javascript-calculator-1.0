@@ -110,6 +110,83 @@ const storeComponentToExpressionArray = (DATA) => {
   // console
   window.console.log('collection:', EXPRESSION.arr.map(obj => obj.value));
 };
+// Collate expression array of components to rules.
+const collateStoredComponents = (DATA) => {
+  /**
+  * Rules:
+  * 1. There is only an alternate sequence of single 'operands' and 'operators'.
+  * 2. There can only be one 'operand' in alternation with 'operators'.
+  * 3. There can only be one 'operator' and a possible negative sign when followed
+  *    by an 'operand'. The previously inputted 'operator' and negative sign
+  *    (when present) will be removed when followed by another 'operator' input.
+  * 4. The negative sign (subtraction operator, '-') can only be placed (inputted)
+  *    before an 'operand' - regardless of 'operators'.
+  * 5. The negative sign and proceeding 'operand' will be integrated when present.
+  */
+
+  // reference
+  const EXPRESSION = DATA.current.expression;
+  const COMPONENT = DATA.current.component;
+
+  // access array
+  const array = [...EXPRESSION.arr];
+  const n = array.length - 1;
+
+  // collate when a sequence of two or more similar component types are present
+  if (n >= 1) {
+
+    // for an 'operator'
+    if (COMPONENT.type === 'operator') {
+      // check if 'operator' can be used as a negative sign
+      const canNegativeSign = array[n]["value"] === '-';
+      // collate 1: A sequence of two 'operator' component input. The second 'operator' must not be a negative sign.
+      const areTwoOperators = array[n-1]["type"]==='operator' && array[n]["type"]==='operator';
+
+      // collate a sequence of 3
+      if (n >= 2) {
+        // collate 2: A sequence of two 'operator' component input. The second 'operator' must not be a negative sign.
+        const areThreeOperators = array[n-2]["type"]==='operator' && array[n-1]["value"]==='-' && array[n]["type"]==='operator';
+        areThreeOperators ? array.splice(n-2, 2) : null;
+      }
+      // collate a sequence of 2: as first or following component
+      (n===1 && areTwoOperators && canNegativeSign) || (areTwoOperators && !canNegativeSign) ? array.splice(n-1, 1) : null;
+    }
+    // for an 'operand'
+    else if (COMPONENT.type === 'operand') {
+      // NEGATIVE INTEGRATION
+      // check: if 'operand' can be a negative in a sequence
+      const canNegative = array[n-1]["value"]==='-' && array[n]["type"]==='operand';
+      // check: for possible negatives at the start of the expression
+      const isNegativeStart = n===1 && canNegative ? true : false;
+      // check: for a possible negative operand setup, example: a sequence of '1 + - 1' will be '1 + -1';
+      const isNegativeSetup = n >= 3 ? ( array[n-2]["type"]==='operator' && canNegative ? true : false) : false;
+      // integrate negatives
+      if (isNegativeStart || isNegativeSetup) {
+        // update the actual developing component for operands
+        COMPONENT.value = array[n-1]["value"] + array[n]["value"];
+        array[n]["value"] = COMPONENT.value;
+      }
+
+      // FOR OPERANDS
+      // check: if there is two 'operand' components in the array; when true, only the latter can remain
+      const areTwoOperands = array[n-1]["type"]==='operand' && array[n]["type"]==='operand';
+
+      // filter out invalid component elements in the array
+      if (isNegativeStart || isNegativeSetup || areTwoOperands) array.splice(n-1, 1);
+    }
+  }
+
+  // parseFloat the stringed operands
+  const l = array.length - 1;
+  const isPrevOperand = l >= 1 ? (array[l-1]["type"]==='operand' && array[l]["type"]==='operator' ? true : false ) : false;
+  if (isPrevOperand) array[l-1]["value"] = parseFloat(array[l-1]["value"]);
+
+  // output
+  EXPRESSION.arr = [...array];
+
+  // console
+  window.console.log('collated:', EXPRESSION.arr.map(obj => obj.value));
+};
 
 
 
@@ -120,9 +197,11 @@ const validateExpressionSequence= (DATA) => {
   * Expression syntax:
   * 1. Starts and ends with an operand.
   * 2. A single operator between operands.
-  * 3. Can use the minus operator as a negative operand indicator when not used as operator.
-  * 4. When a result of the previous calculation is present, it is used as a start of another expression
-  *    when user follows it up with an operator first, otherwise, it is erased.
+  * 3. Can use the minus operator as a negative operand indicator when not used
+  *    as operator.
+  * 4. When a result of the previous calculation is present, it is used as a
+  *    start of another expression when user follows it up with an operator
+  *    first, otherwise, it is erased.
   */
 
   // reference
@@ -180,6 +259,7 @@ const comp = {
   "form"    : formAComponent,
   "display" : shareComponentAsDisplayData,
   "store"   : storeComponentToExpressionArray,
+  "collate" : collateStoredComponents,
 };
 const exp = {
   "validate"   : validateExpressionSequence,
@@ -211,6 +291,10 @@ export default function runCalculator(DATA, userInput) {
     // store components
     comp.store(DATA);
 
+    // correct component
+    comp.collate(DATA);
+
+    // correct sequence
     exp.validate(DATA);
   }
   // Calculate the inputted expression.
