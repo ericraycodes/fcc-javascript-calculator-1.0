@@ -6,7 +6,9 @@
 	- **Data structure** must be meaningful.
 	- **Objects**: for defining data.
 	- **Arrays**: for listing/classifying data.
-- Use proper **naming** at the beginning: *state, ref, variable, function*.
+- Use proper **naming** and **conventions** at the beginning: *state, ref, variable, function*.
+- Understand the project: from the *overview* down to the *specifics*.
+- Clean group of code right away for *readability/review* and *maintenance*.
 - Use recommended **HTML entities**.
 
 
@@ -31,6 +33,8 @@
 			- The subtraction operator can be used to indicate a *negative operand*.
 			- Anticipates the use of previous calculation result to start the next expression.
 		1. Reflect calculator activity onto the *display*.
+		1. Prepare the calculator for another math expression.
+			- empty the expression array.
 	- Calculate result of the expression.
 		- **Identify** operators in the collection.
 		- **Simplify** the collection with MDAS until one numeric result remains.
@@ -43,17 +47,17 @@
 	- **"input"**, stores mouse input with properties:
 		- **'value'**, a single character string.
 		- **'type'**, the type of input: *operand, operator, clear, equals*.
-	- **"element"**, store the collected valid single/group of 'key' with properties:
-		- **'str'**, a string of 'key.char' inputs with similar 'key.type'.
+	- **"component"**, store the collected valid single/group of 'key' with properties:
+		- **'value'**, a string of 'key.char' inputs with similar 'key.type'.
 		- **'type'**, specify the 'key.type': *operand, operator*.
 	- **"expression"**, store the validated mathematical expression input, with properties:
 		- **'str'**, a string representation of the 'expression'.
 		- **'arr'**, an array of the collection of validated sequence of 'role'(operands and operators).
-	- **'result'**, store the simplification data, with properties:
-		- **'operatorIndex'**, the index of one *operator* at a time within the 'expression.arr', MDAS rule.
-		- **'answer'**, store the result of one calculation at a time.
-		- **'isSimplified'**, boolean *true* when "expression" is simplified, *false* otherwise.
-	- **'doClear'**, boolean *true* to clear data, *false* otherwise.
+	- **"calculation**, store the result of the calculation process.
+	- **"display**, stores the data to be displayed
+		- **"row1"**, reflects the math expression
+		- **"row2"**, reflects the user-input and calculation output
+
 
 #### Mathematical expression syntax rules
 1. **Starts** and **ends** with an *operand*.

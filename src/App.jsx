@@ -34,7 +34,7 @@
 
         "calculation" : {
           "result"  : null,
-          "isValid" : false,
+          "type"    : null,
         },
 
         "display" : {
