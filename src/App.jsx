@@ -17,26 +17,31 @@
       });
       // Store calculator's data. This will not change between renders.
       const DATA = useRef({
+        // user-input
         "input" : {
-          "value" : '',
+          "value" : null,
           "type"  : null,
         },
 
+        // 'operand' or 'operator' composition
         "component" : {
-          "value" : '',
+          "value" : null,
           "type"  : null,
         },
 
+        // math expression
         "expression" : {
-          "str" : '',
+          "str" : null,
           "arr" : [],
         },
 
-        "calculation" : {
-          "result"  : null,
-          "type"    : null,
+        // final simplification of the expression
+        "result" : {
+          "value" : null,
+          "type"  : null,
         },
 
+        // calculator's display content
         "display" : {
           "row1" : '',
           "row2" : 0,
