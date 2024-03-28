@@ -19,6 +19,9 @@ export default function Pad({ callback }) {
 
   // Callback: onMouseUp
   const onMouseUp = (event) => {
+    // console user-input count
+    window.console.count('USER-EVENT');
+    // console event
     window.console.log(event.target);
 
     // capture the single-character-mouse-event-input
@@ -37,7 +40,7 @@ export default function Pad({ callback }) {
       <div className='digits'>
         <button id='zero'   >0</button>
         <button id='one'    >1</button>
-        <button id='two'    >2</button>
+        <button id='two'    >2</button> 
         <button id='three'  >3</button>
         <button id='four'   >4</button>
         <button id='five'   >5</button>
@@ -54,7 +57,6 @@ export default function Pad({ callback }) {
         <button id='divide'     >&#47;</button>
       </div>
     </section>
-    {/* { window.console.count('<Pad/>') } */}
     </>
   )
 }
